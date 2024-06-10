@@ -1,0 +1,65 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model RestaurantProfile {
+  address     String?
+  contactInfo String?
+  createdAt   DateTime   @default(now())
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  menuItems   MenuItem[]
+  name        String?
+  orders      Order[]
+  updatedAt   DateTime   @updatedAt
+}
+
+model MenuItem {
+  availability        Boolean?
+  category            String?
+  createdAt           DateTime           @default(now())
+  description         String?
+  id                  String             @id @default(auto()) @map("_id") @db.ObjectId
+  name                String?
+  price               Float?
+  restaurantProfile   RestaurantProfile? @relation(fields: [restaurantProfileId], references: [id])
+  restaurantProfileId String?            @db.ObjectId
+  updatedAt           DateTime           @updatedAt
+}
+
+model Order {
+  createdAt           DateTime           @default(now())
+  customer            String?
+  id                  String             @id @default(auto()) @map("_id") @db.ObjectId
+  items               String?
+  restaurantProfile   RestaurantProfile? @relation(fields: [restaurantProfileId], references: [id])
+  restaurantProfileId String?            @db.ObjectId
+  status              EnumOrderStatus?
+  totalPrice          Float?
+  updatedAt           DateTime           @updatedAt
+}
+
+model User {
+  createdAt DateTime      @default(now())
+  email     String?       @unique
+  firstName String?
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  lastName  String?
+  password  String
+  role      EnumUserRole?
+  roles     Json
+  updatedAt DateTime      @updatedAt
+  username  String        @unique
+}
+
+enum EnumOrderStatus {
+  Option1
+}
+
+enum EnumUserRole {
+  Option1
+}
